@@ -24,13 +24,9 @@ defmodule Proj2 do
 
   defp fullNetwork(actorList) do
     for i <- actorList do
-      IO.inspect(i)
-      list = for j <- actorList  do
-          if j != i do
-            j
-          end
+      list = for j <- actorList, j != i do
+        j
       end
-      list = Enum.reject(list, &is_nil/1)
       GossipNode.neighbor(i, list)
     end
   end
@@ -40,7 +36,7 @@ defmodule GossipNode do
   use GenServer
 
   def start_link(mParent, mNeighbors, mRcvTimes) do
-    GenServer.start_link(__MODULE__, {mParent, mNeighbors, mRcvTimes}, []) # {:ok, pid}
+    GenServer.start_link(__MODULE__, {mParent, mNeighbors, mRcvTimes}, [])
   end
 
   def neighbor(server_pid, mNeighborList) do
@@ -55,12 +51,15 @@ defmodule GossipNode do
     {:ok, {mParent, mNeighbors, mRcvTimes}}
   end
 
+  # Update neighbor list
   def handle_call({:neighbor, mNeighborList}, _from, {mParent, mNeighbors, mRcvTimes}) do
-      {:reply, :ok, {mParent, mNeighborList, mRcvTimes}}
+    IO.inspect(mNeighborList)
+    {:reply, :ok, {mParent, mNeighborList, mRcvTimes}}
   end
 
+  # Initiate first msg
   def handle_call({:initiate, msg}, _from, {mParent, mNeighbors, mRcvTimes}) do
-    randNeighbor = Enum.random(mNeighbors)
+    randNeighbor = Enum.random(mNeighbors) # Generate random neighbor
     IO.puts("Choosen neighbor: #{inspect(randNeighbor)}")
     send randNeighbor, msg
     {:reply, :ok, {mParent, mNeighbors, mRcvTimes}}
@@ -70,13 +69,13 @@ defmodule GossipNode do
     IO.puts "#{Kernel.inspect(self())} Received #{msg} #{mRcvTimes + 1} times"
     mRcvTimes = mRcvTimes + 1
 
-    if mRcvTimes == 1 do
+    if mRcvTimes == 1 do # Received first time
       send(mParent, :finish)
     end
 
-    if mRcvTimes == 10 do
+    if mRcvTimes == 10 do # 10th time
       {:stop, :normal, {mParent, mNeighbors, mRcvTimes}}
-    else
+    else # Continue sending to others
       randNeighbor = Enum.random(mNeighbors)
       send randNeighbor, msg
       IO.puts "#{Kernel.inspect(self())} sends #{msg} to #{Kernel.inspect(randNeighbor)}"
