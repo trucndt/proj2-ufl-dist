@@ -10,7 +10,7 @@ defmodule GossipNode do
   end
 
   def initiate(server_pid, msg) do
-    GenServer.call(server_pid, {:initiate, msg})
+    GenServer.cast(server_pid, {:initiate, msg})
   end
 
   def init({mParent, mNeighbors, mRcvTimes, mMsg}) do
@@ -19,14 +19,15 @@ defmodule GossipNode do
 
   # Update neighbor list
   def handle_call({:neighbor, mNeighborList}, _from, {mParent, mNeighbors, mRcvTimes, mMsg}) do
-    IO.inspect(mNeighborList)
+#    IO.inspect(mNeighborList)
     {:reply, :ok, {mParent, mNeighborList, mRcvTimes, mMsg}}
   end
 
   # Initiate first msg
-  def handle_call({:initiate, msg}, _from, {mParent, mNeighbors, mRcvTimes, mMsg}) do
+  def handle_cast({:initiate, msg}, {mParent, mNeighbors, mRcvTimes, mMsg}) do
     sendToRandNeighbor(msg, mNeighbors)
-    {:reply, :ok, {mParent, mNeighbors, mRcvTimes, msg}}
+    scheduleSend()
+    {:noreply, {mParent, mNeighbors, mRcvTimes, msg}}
   end
 
   def handle_info({:message, msg}, {mParent, mNeighbors, mRcvTimes, mMsg}) do
@@ -41,7 +42,7 @@ defmodule GossipNode do
     if mRcvTimes == 10 do # 10th time
       {:stop, :normal, {mParent, mNeighbors, mRcvTimes, mMsg}}
     else # Continue sending to others
-      sendToRandNeighbor(msg, mNeighbors)
+#      sendToRandNeighbor(msg, mNeighbors)
       {:noreply, {mParent, mNeighbors, mRcvTimes, msg}}
     end
   end
@@ -60,6 +61,6 @@ defmodule GossipNode do
   end
 
   defp scheduleSend() do
-    Process.send_after(self(), :work, 5)
+    Process.send_after(self(), :work, 10)
   end
 end

@@ -1,16 +1,15 @@
 defmodule Proj2 do
   def start(mAlgo, mTopo, mNumNode) do
     actorList = for i <- 1..mNumNode  do
-#      {:ok, pid} = GossipNode.start_link(self(), [], 0, [])
-      {:ok, pid} = PushSumNode.start_link(self(), [], i, 1, {i})
+      {:ok, pid} = GossipNode.start_link(self(), [], 0, [])
+#      {:ok, pid} = PushSumNode.start_link(self(), [], i, 1, {})
       pid
     end
 
     fullNetwork(actorList)
 
-#    GossipNode.initiate(Enum.at(actorList, 0), "John 3:16")
-    PushSumNode.initiate(Enum.at(actorList, 0))
-
+    GossipNode.initiate(Enum.at(actorList, 0), "John 3:16")
+#    Enum.each(actorList, fn actor -> PushSumNode.initiate(actor) end)
     waitForWorkers(mNumNode)
 
     IO.puts("DONE")
@@ -29,8 +28,8 @@ defmodule Proj2 do
       list = for j <- actorList, j != i do
         j
       end
-#      GossipNode.neighbor(i, list)
-      PushSumNode.neighbor(i, list)
+      GossipNode.neighbor(i, list)
+#      PushSumNode.neighbor(i, list)
     end
   end
 
