@@ -6,7 +6,7 @@ defmodule Proj2 do
       pid
     end
 
-    threeDNetwork(actorList)
+    sphereNetwork(actorList)
 
     GossipNode.initiate(Enum.at(actorList, 0), "John 3:16")
 #    Enum.each(actorList, fn actor -> PushSumNode.initiate(actor) end)
@@ -112,6 +112,39 @@ defmodule Proj2 do
         [Enum.at(actorList, i + size) | list]
       else
         list
+      end
+
+      GossipNode.neighbor(Enum.at(actorList, i), list)
+    end
+  end
+
+  defp sphereNetwork(actorList) do
+    one_size = 4
+
+    for i <- 0 .. length(actorList) - 1  do
+      list = []
+      list = if i - 1 >=  one_size * div(i, one_size) do
+        [Enum.at(actorList, i - 1) | list]
+      else
+        [Enum.at(actorList, i + one_size - 1) | list]
+      end
+
+      list = if i + 1 < one_size * (div(i, one_size) + 1) do
+        [Enum.at(actorList, i + 1) | list]
+      else
+        [Enum.at(actorList, i - one_size + 1) | list]
+      end
+
+      list = if i - one_size >= 0 do
+        [Enum.at(actorList, i - one_size) | list]
+      else
+        [Enum.at(actorList, div(length(actorList) - 1, one_size) * one_size + i) | list]
+      end
+
+      list = if i + one_size < length(actorList) do
+        [Enum.at(actorList, i + one_size) | list]
+      else
+        [Enum.at(actorList, rem(i, one_size)) | list]
       end
 
       GossipNode.neighbor(Enum.at(actorList, i), list)
