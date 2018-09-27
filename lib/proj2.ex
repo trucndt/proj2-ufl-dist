@@ -6,7 +6,7 @@ defmodule Proj2 do
       pid
     end
 
-    impLineNetwork(actorList)
+    threeDNetwork(actorList)
 
     GossipNode.initiate(Enum.at(actorList, 0), "John 3:16")
 #    Enum.each(actorList, fn actor -> PushSumNode.initiate(actor) end)
@@ -73,33 +73,47 @@ defmodule Proj2 do
   end
 
   defp threeDNetwork(actorList) do
-    SIZE = 4*4
-    ONE_SIZE = trunc(:math.sqrt(SIZE))
+    size = 4*4
+    one_size = trunc(:math.sqrt(size))
 
     for i <- 0 .. length(actorList) - 1  do
-      list = if i - 1 >= 0 do
-        [list | [Enum.at(actorList, i - 1)]]
+      list = []
+      list = if i - 1 >=  one_size * div(i, one_size) do
+        [Enum.at(actorList, i - 1) | list]
+      else
+        list
       end
 
-      list = if i + 1 < ONE_SIZE do
-        [list | [Enum.at(actorList, i + 1)]]
+      list = if i + 1 < one_size * (div(i, one_size) + 1) do
+        [Enum.at(actorList, i + 1) | list]
+      else
+        list
       end
 
-      list = if i - ONE_SIZE >= 0 do
-        [list | [Enum.at(actorList, i - ONE_SIZE)]]
+      list = if i - one_size >= size * div(i, size) do
+        [Enum.at(actorList, i - one_size) | list]
+      else
+        list
       end
 
-      list = if i + ONE_SIZE < SIZE do
-        [list | [Enum.at(actorList, i + ONE_SIZE)]]
+      list = if i + one_size < size * (div(i, size) + 1) do
+        [Enum.at(actorList, i + one_size) | list]
+      else
+        list
       end
 
-#      list = if i - 1 >= 0 do
-#        [list | [Enum.at(actorList, i - 1)]]
-#      end
-#
-#      list = if i - 1 >= 0 do
-#        [list | [Enum.at(actorList, i - 1)]]
-#      end
+      list = if i - size >= 0 do
+        [Enum.at(actorList, i - size) | list]
+      else
+        list
+      end
+
+      list = if i + size < length(actorList) do
+        [Enum.at(actorList, i + size) | list]
+      else
+        list
+      end
+
       GossipNode.neighbor(Enum.at(actorList, i), list)
     end
   end
