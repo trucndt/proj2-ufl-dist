@@ -26,8 +26,9 @@ defmodule GossipNode do
   # Initiate first msg
   def handle_cast({:initiate, msg}, {mParent, mNeighbors, mRcvTimes, mMsg}) do
     sendToRandNeighbor(msg, mNeighbors)
+    send(mParent, :finish)
     scheduleSend()
-    {:noreply, {mParent, mNeighbors, mRcvTimes, msg}}
+    {:noreply, {mParent, mNeighbors, mRcvTimes + 1, msg}}
   end
 
   def handle_info({:message, msg}, {mParent, mNeighbors, mRcvTimes, mMsg}) do

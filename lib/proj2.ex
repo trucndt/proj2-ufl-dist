@@ -6,7 +6,7 @@ defmodule Proj2 do
       pid
     end
 
-    fullNetwork(actorList)
+    lineNetwork(actorList)
 
     GossipNode.initiate(Enum.at(actorList, 0), "John 3:16")
 #    Enum.each(actorList, fn actor -> PushSumNode.initiate(actor) end)
@@ -30,6 +30,20 @@ defmodule Proj2 do
       end
       GossipNode.neighbor(i, list)
 #      PushSumNode.neighbor(i, list)
+    end
+  end
+
+  defp lineNetwork(actorList) do
+    for i <- 0 .. length(actorList) - 1  do
+      list = cond do
+        i == 0 ->
+          [Enum.at(actorList, i + 1)]
+        i == length(actorList) - 1 ->
+          [Enum.at(actorList, i - 1)]
+        true ->
+          [Enum.at(actorList, i - 1), Enum.at(actorList, i + 1)]
+      end
+      GossipNode.neighbor(Enum.at(actorList, i), list)
     end
   end
 
