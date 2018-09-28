@@ -34,7 +34,6 @@ defmodule PushSumNode do
   # Receving message
   def handle_info({:message, msg}, {mParent, mNeighbors, s, w, past}) do
     {recvS, recvW} = msg
-#    IO.puts "#{Kernel.inspect(self())} Received S = #{recvS}, W = #{recvW}"
 
     if is_integer(s) && w === 1 do # Received first time
 #      IO.puts "#{Kernel.inspect(self())} First time"
@@ -44,12 +43,14 @@ defmodule PushSumNode do
     s = s + recvS
     w = w + recvW
 
-    {:noreply, {mParent, mNeighbors, s, w, past}}
+    sendToRandNeighbor({s/2, w/2}, mNeighbors)
+
+    {:noreply, {mParent, mNeighbors, s/2, w/2, past}}
   end
 
   # Periodic
   def handle_info(:work, {mParent, mNeighbors, s, w, past}) do
-    sendToRandNeighbor({s/2, w/2}, mNeighbors)
+#    sendToRandNeighbor({s/2, w/2}, mNeighbors)
 
     ratio = s/w
     if tuple_size(past) < 2 do
@@ -58,9 +59,9 @@ defmodule PushSumNode do
       {:noreply, {mParent, mNeighbors, s/2, w/2, {abs(ratio - lastRatio), ratio}}}
     else
       {lastDiff, lastRatio} = past
-#      IO.puts("#{Kernel.inspect(self())} LastDiff = #{lastDiff} , lastRatio = #{lastRatio}")
+      IO.puts("#{Kernel.inspect(self())} LastDiff = #{lastDiff} , lastRatio = #{lastRatio}")
       if lastDiff < 1.0e-10 && abs(ratio - lastRatio) < 1.0e-10 do
-#        IO.puts("#{Kernel.inspect(self())} diff = #{abs(ratio - lastRatio)}")
+        IO.puts("#{Kernel.inspect(self())} diff = #{abs(ratio - lastRatio)}")
         send(mParent, :finish)
         {:stop, :normal, {mParent, mNeighbors, s/2, w/2, {abs(ratio - lastRatio), ratio}}}
       else
@@ -83,6 +84,6 @@ defmodule PushSumNode do
   end
 
   defp scheduleSend() do
-    Process.send_after(self(), :work, 10)
+    Process.send_after(self(), :work, 5)
   end
 end
