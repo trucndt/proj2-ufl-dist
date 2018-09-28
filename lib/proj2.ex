@@ -1,15 +1,37 @@
 defmodule Proj2 do
   def start(mAlgo, mTopo, mNumNode) do
     actorList = for i <- 1..mNumNode  do
-      {:ok, pid} = GossipNode.start_link(self(), [], 0, [])
-#      {:ok, pid} = PushSumNode.start_link(self(), [], i, 1, {})
+      {:ok, pid} = cond do
+        mAlgo == "gossip" ->
+          GossipNode.start_link(self(), [], 0, [])
+        mAlgo == "push-sum" ->
+          PushSumNode.start_link(self(), [], i, 1, {})
+      end
       pid
     end
 
-    rand2DNetwork(actorList)
+    cond do
+      mTopo == "full" ->
+        fullNetwork(actorList, mAlgo)
+      mTopo == "3D" ->
+         threeDNetwork(actorList, mAlgo)
+      mTopo == "rand2D" ->
+         rand2DNetwork(actorList, mAlgo)
+      mTopo == "sphere" ->
+        sphereNetwork(actorList, mAlgo)
+      mTopo == "line" ->
+        lineNetwork(actorList, mAlgo)
+      mTopo == "imp2D" ->
+        impLineNetwork(actorList, mAlgo)
+    end
 
-    GossipNode.initiate(Enum.at(actorList, 0), "John 3:16")
-#    Enum.each(actorList, fn actor -> PushSumNode.initiate(actor) end)
+    cond do
+      mAlgo == "gossip" ->
+        GossipNode.initiate(Enum.at(actorList, 0), "John 3:16")
+      mAlgo == "push-sum" ->
+        Enum.each(actorList, fn actor -> PushSumNode.initiate(actor) end)
+    end
+
     waitForWorkers(mNumNode)
 
     IO.puts("DONE")
@@ -23,17 +45,16 @@ defmodule Proj2 do
     end
   end
 
-  defp fullNetwork(actorList) do
+  defp fullNetwork(actorList, mAlgo) do
     for i <- actorList do
       list = for j <- actorList, j != i do
         j
       end
-      GossipNode.neighbor(i, list)
-#      PushSumNode.neighbor(i, list)
+      if mAlgo == "gossip", do: GossipNode.neighbor(i, list), else: PushSumNode.neighbor(i, list)
     end
   end
 
-  defp lineNetwork(actorList) do
+  defp lineNetwork(actorList, mAlgo) do
     for i <- 0 .. length(actorList) - 1  do
       list = cond do
         i == 0 ->
@@ -43,11 +64,11 @@ defmodule Proj2 do
         true ->
           [Enum.at(actorList, i - 1), Enum.at(actorList, i + 1)]
       end
-      GossipNode.neighbor(Enum.at(actorList, i), list)
+      if mAlgo == "gossip", do: GossipNode.neighbor(Enum.at(actorList, i), list), else: PushSumNode.neighbor(Enum.at(actorList, i), list)
     end
   end
 
-  defp impLineNetwork(actorList) do
+  defp impLineNetwork(actorList, mAlgo) do
     for i <- 0 .. length(actorList) - 1  do
       list = cond do
         i == 0 ->
@@ -59,7 +80,7 @@ defmodule Proj2 do
       end
 
       list = [otherRandNeighbor(actorList, list) | list]
-      GossipNode.neighbor(Enum.at(actorList, i), list)
+      if mAlgo == "gossip", do: GossipNode.neighbor(Enum.at(actorList, i), list), else: PushSumNode.neighbor(Enum.at(actorList, i), list)
     end
   end
 
@@ -72,7 +93,7 @@ defmodule Proj2 do
     end
   end
 
-  defp threeDNetwork(actorList) do
+  defp threeDNetwork(actorList, mAlgo) do
     size = 4*4
     one_size = trunc(:math.sqrt(size))
 
@@ -114,11 +135,11 @@ defmodule Proj2 do
         list
       end
 
-      GossipNode.neighbor(Enum.at(actorList, i), list)
+      if mAlgo == "gossip", do: GossipNode.neighbor(Enum.at(actorList, i), list), else: PushSumNode.neighbor(Enum.at(actorList, i), list)
     end
   end
 
-  defp sphereNetwork(actorList) do
+  defp sphereNetwork(actorList, mAlgo) do
     one_size = 4
 
     for i <- 0 .. length(actorList) - 1  do
@@ -147,11 +168,11 @@ defmodule Proj2 do
         [Enum.at(actorList, rem(i, one_size)) | list]
       end
 
-      GossipNode.neighbor(Enum.at(actorList, i), list)
+      if mAlgo == "gossip", do: GossipNode.neighbor(Enum.at(actorList, i), list), else: PushSumNode.neighbor(Enum.at(actorList, i), list)
     end
   end
 
-  defp rand2DNetwork(actorList) do
+  defp rand2DNetwork(actorList, mAlgo) do
     coor = for i <- actorList do
       {:rand.uniform(), :rand.uniform()}
     end
@@ -160,8 +181,8 @@ defmodule Proj2 do
       list = for j <- 0..length(actorList) - 1, j != i, calcDistance(Enum.at(coor, i), Enum.at(coor, j)) < 0.1 do
         Enum.at(actorList, j)
       end
-      GossipNode.neighbor(Enum.at(actorList, i), list)
-      #      PushSumNode.neighbor(i, list)
+
+      if mAlgo == "gossip", do: GossipNode.neighbor(Enum.at(actorList, i), list), else: PushSumNode.neighbor(Enum.at(actorList, i), list)
     end
   end
 
