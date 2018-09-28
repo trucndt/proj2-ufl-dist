@@ -32,9 +32,9 @@ defmodule Proj2 do
         Enum.each(actorList, fn actor -> PushSumNode.initiate(actor) end)
     end
 
-    waitForWorkers(mNumNode)
+    time = :timer.tc(fn  -> waitForWorkers(mNumNode) end) |> elem(0) |> Kernel./(1_000)
 
-    IO.puts("DONE")
+    IO.puts("Elapsed time = #{time}")
   end
 
   defp waitForWorkers(noActors) do

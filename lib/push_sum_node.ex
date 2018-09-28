@@ -58,9 +58,9 @@ defmodule PushSumNode do
       {:noreply, {mParent, mNeighbors, s/2, w/2, {abs(ratio - lastRatio), ratio}}}
     else
       {lastDiff, lastRatio} = past
-      IO.puts("#{Kernel.inspect(self())} LastDiff = #{lastDiff} , lastRatio = #{lastRatio}")
+#      IO.puts("#{Kernel.inspect(self())} LastDiff = #{lastDiff} , lastRatio = #{lastRatio}")
       if lastDiff < 1.0e-10 && abs(ratio - lastRatio) < 1.0e-10 do
-        IO.puts("#{Kernel.inspect(self())} diff = #{abs(ratio - lastRatio)}")
+#        IO.puts("#{Kernel.inspect(self())} diff = #{abs(ratio - lastRatio)}")
         send(mParent, :finish)
         {:stop, :normal, {mParent, mNeighbors, s/2, w/2, {abs(ratio - lastRatio), ratio}}}
       else
@@ -77,8 +77,8 @@ defmodule PushSumNode do
     if (neighbors != []) do
       randNeighbor = Enum.random(neighbors)
       send randNeighbor, {:message, msg}
-      {recvS, recvW} = msg
-      IO.puts "#{Kernel.inspect(self())} sends S = #{recvS}, W = #{recvW} to #{Kernel.inspect(randNeighbor)}"
+#      {recvS, recvW} = msg
+#      IO.puts "#{Kernel.inspect(self())} sends S = #{recvS}, W = #{recvW} to #{Kernel.inspect(randNeighbor)}"
     end
   end
 
