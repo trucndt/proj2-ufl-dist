@@ -6,7 +6,7 @@ defmodule Proj2 do
       pid
     end
 
-    sphereNetwork(actorList)
+    rand2DNetwork(actorList)
 
     GossipNode.initiate(Enum.at(actorList, 0), "John 3:16")
 #    Enum.each(actorList, fn actor -> PushSumNode.initiate(actor) end)
@@ -149,5 +149,25 @@ defmodule Proj2 do
 
       GossipNode.neighbor(Enum.at(actorList, i), list)
     end
+  end
+
+  defp rand2DNetwork(actorList) do
+    coor = for i <- actorList do
+      {:rand.uniform(), :rand.uniform()}
+    end
+
+    for i <- 0..length(actorList) - 1 do
+      list = for j <- 0..length(actorList) - 1, j != i, calcDistance(Enum.at(coor, i), Enum.at(coor, j)) < 0.1 do
+        Enum.at(actorList, j)
+      end
+      GossipNode.neighbor(Enum.at(actorList, i), list)
+      #      PushSumNode.neighbor(i, list)
+    end
+  end
+
+  defp calcDistance({x1, y1}, {x2, y2}) do
+    dx = x1 - x2
+    dy = y1 - y2
+    :math.sqrt(dx * dx + dy * dy)
   end
 end
