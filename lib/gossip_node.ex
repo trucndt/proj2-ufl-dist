@@ -56,9 +56,11 @@ defmodule GossipNode do
 
   # Send msg to a random neighbor
   defp sendToRandNeighbor(msg, neighbors) do
-    randNeighbor = Enum.random(neighbors)
-    send randNeighbor, {:message, msg}
-    #    IO.puts "#{Kernel.inspect(self())} sends #{msg} to #{Kernel.inspect(randNeighbor)}"
+    if (neighbors != []) do
+      randNeighbor = Enum.random(neighbors)
+      send randNeighbor, {:message, msg}
+      #    IO.puts "#{Kernel.inspect(self())} sends #{msg} to #{Kernel.inspect(randNeighbor)}"
+    end
   end
 
   defp scheduleSend() do
