@@ -191,4 +191,9 @@ defmodule Proj2 do
     dy = y1 - y2
     :math.sqrt(dx * dx + dy * dy)
   end
+
+  def main(args) do
+    [numNode, topo, algo] = args
+    start(algo, topo, String.to_integer(numNode))
+  end
 end
