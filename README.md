@@ -1,21 +1,31 @@
-# Proj2
+# Student info
+* Name: Truc D Nguyen
+* UFID: 9482-7764
 
-**TODO: Add description**
+# Instructions
+The main source code is in **lib/**
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `proj2` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:proj2, "~> 0.1.0"}
-  ]
-end
+### Configuration and Compilation
+To compile:
+```
+$ mix escript.build
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/proj2](https://hexdocs.pm/proj2).
+### Run syntax
+```
+$ ./proj2 <numNode> <topology> <alogrithm>
+```
+- numNode: number of nodes in the network
+- topology: one of **full, 3D, rand2D, sphere, line, imp2D**
+- algorithm: one of **gossip, push-sum**
 
+### Output 
+Time it takes to converge in milliseconds
+
+### Example
+```
+$ ./proj2 256 imp2D gossip
+Elapsed time = 208.081
+```
+
+# What is working

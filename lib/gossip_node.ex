@@ -43,7 +43,7 @@ defmodule GossipNode do
     if mRcvTimes == 10 do # 10th time
       {:stop, :normal, {mParent, mNeighbors, mRcvTimes, mMsg}}
     else # Continue sending to others
-#      sendToRandNeighbor(msg, mNeighbors)
+      sendToRandNeighbor(msg, mNeighbors)
       {:noreply, {mParent, mNeighbors, mRcvTimes, msg}}
     end
   end

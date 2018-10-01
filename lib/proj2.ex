@@ -29,7 +29,7 @@ defmodule Proj2 do
       mAlgo == "gossip" ->
         GossipNode.initiate(Enum.at(actorList, 0), "John 3:16")
       mAlgo == "push-sum" ->
-        Enum.each(actorList, fn actor -> PushSumNode.initiate(actor) end)
+        PushSumNode.initiate(Enum.at(actorList, 0))
     end
 
     time = :timer.tc(fn  -> waitForWorkers(mNumNode) end) |> elem(0) |> Kernel./(1_000)
