@@ -194,6 +194,21 @@ defmodule Proj2 do
 
   def main(args) do
     [numNode, topo, algo] = args
-    start(algo, topo, String.to_integer(numNode))
+
+    num = String.to_integer(numNode)
+
+    num = if topo == "sphere" do
+      if rem(num, 4) > 0, do: (div(num, 4) + 1) * 4, else: num
+    else
+      num
+    end
+
+    num = if topo == "3D" do
+      if rem(num, 16) > 0, do: (div(num, 16) + 1) * 16, else: num
+    else
+      num
+    end
+
+    start(algo, topo, num)
   end
 end
