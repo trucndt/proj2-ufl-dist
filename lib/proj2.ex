@@ -34,7 +34,7 @@ defmodule Proj2 do
 
     time = :timer.tc(fn  -> waitForWorkers(mNumNode) end) |> elem(0) |> Kernel./(1_000)
 
-    IO.puts("Elapsed time = #{time}")
+    IO.puts("Elapsed time = #{time}\n")
   end
 
   defp waitForWorkers(noActors) do
